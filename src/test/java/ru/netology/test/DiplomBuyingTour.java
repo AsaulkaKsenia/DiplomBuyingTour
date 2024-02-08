@@ -33,54 +33,46 @@ public class DiplomBuyingTour {
     }
 
     @Nested
-    //Тесты на оплату и получения кредита по валидной карте:
+    //Позитивные тесты
     public class ValidCard {
 
         @Test
         @SneakyThrows
-        @DisplayName("Покупка валидной картой")
+        @DisplayName("Покупка тура по дебетовой карте")
         public void shouldPaymentValidCard() {
             var purchasePage = new PurchasePage();
             purchasePage.cardPayment();
             var info = getApprovedCard();
             purchasePage.sendingData(info);
-            //Время отправки данных в базу данных, в секундах:
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(12);
             var expected = "APPROVED";
             var paymentInfo = getPaymentInfo();
             var orderInfo = getOrderInfo();
-            //Проверка соответствия статуса в базе данных в таблице покупок:
             assertEquals(expected, paymentInfo.getStatus());
-            //Проверка соответствия в базе данных id в таблице покупок и в таблице заявок:
             assertEquals(paymentInfo.getTransaction_id(), orderInfo.getPayment_id());
-            //Проверка вывода соответствующего уведомления пользователю на странице покупок:
             purchasePage.bankApproved();
         }
 
         @Test
         @SneakyThrows
-        @DisplayName("Получение кредита на покупку по валидной карте")
+        @DisplayName("Покупка тура в кредит")
         public void shouldCreditValidCard() {
             var purchasePage = new PurchasePage();
             purchasePage.cardCredit();
             var info = getApprovedCard();
             purchasePage.sendingData(info);
-            //Время отправки данных в базу данных, в секундах:
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(12);
             var expected = "APPROVED";
             var creditRequestInfo = getCreditRequestInfo();
             var orderInfo = getOrderInfo();
-            //Проверка соответствия статуса в базе данных в таблице запросов кредита:
             assertEquals(expected, creditRequestInfo.getStatus());
-            //Проверка соответствия в базе данных id в таблице запросов кредита и в таблице заявок:
             assertEquals(creditRequestInfo.getBank_id(), orderInfo.getCredit_id());
-            //Проверка вывода соответствующего уведомления пользователю на странице покупок:
             purchasePage.bankApproved();
         }
     }
 
     @Nested
-    //Тесты на оплату и получения кредита по не валидной карте:
+    //Негативные тесты
     public class InvalidCard {
 
         @Test
@@ -91,43 +83,35 @@ public class DiplomBuyingTour {
             purchasePage.cardPayment();
             var info = getDeclinedCard();
             purchasePage.sendingData(info);
-            //Время отправки данных в базу данных, в секундах:
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(12);
             var expected = "DECLINED";
             var paymentInfo = getPaymentInfo();
             var orderInfo = getOrderInfo();
-            //Проверка соответствия статуса в базе данных в таблице покупок:
             assertEquals(expected, paymentInfo.getStatus());
-            //Проверка соответствия в базе данных id в таблице покупок и в таблице заявок:
             assertEquals(paymentInfo.getTransaction_id(), orderInfo.getPayment_id());
-            //Проверка вывода соответствующего уведомления пользователю на странице покупок:
             purchasePage.bankDeclined();
         }
 
         @Test
         @SneakyThrows
-        @DisplayName("Получение кредита на покупку по не валидной карте")
+        @DisplayName("Получение кредита по не валидной карте")
         public void shouldCreditInvalidCard() {
             var purchasePage = new PurchasePage();
             purchasePage.cardCredit();
             var info = getDeclinedCard();
             purchasePage.sendingData(info);
-            //Время отправки данных в базу данных, в секундах:
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(12);
             var expected = "DECLINED";
             var creditRequestInfo = getCreditRequestInfo();
             var orderInfo = getOrderInfo();
-            //Проверка соответствия статуса в базе данных в таблице запросов кредита:
             assertEquals(expected, creditRequestInfo.getStatus());
-            //Проверка соответствия в базе данных id в таблице запросов кредита и в таблице заявок:
             assertEquals(creditRequestInfo.getBank_id(), orderInfo.getCredit_id());
-            //Проверка вывода соответствующего уведомления пользователю на странице покупок:
             purchasePage.bankApproved();
         }
     }
 
     @Nested
-    //Тесты на валидацию полей платежной формы:
+    //Покупка с пустыми полями
     public class PaymentFormFieldValidation {
 
         @BeforeEach
@@ -137,14 +121,14 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Отправка пустой формы")
+        @DisplayName("Покупка тура с пустыми полями в форме покупки")
         public void shouldEmpty() {
             var purchasePage = new PurchasePage();
             purchasePage.emptyForm();
         }
 
         @Test
-        @DisplayName("Поле 'Номер карты', пустое поле")
+        @DisplayName("Покупка тура с пустым полем 'Номер карты'")
         public void shouldEmptyCardNumberField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -152,15 +136,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Номер карты', не полный номер карты")
-        public void shouldCardWithIncompleteCardNumber() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithIncompleteCardNumber();
-            purchasePage.invalidCardNumberField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', пустое поле")
+        @DisplayName("Покупка тура с пустым полем 'Месяц'")
         public void shouldEmptyMonthField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -168,31 +144,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Месяц', просроченный месяц")
-        public void shouldCardWithOverdueMonth() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithOverdueMonth();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', нижнее негативное значение '00'")
-        public void shouldCardWithLowerMonthValue() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithLowerMonthValue();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', верхнее негативное значение '13'")
-        public void shouldCardWithGreaterMonthValue() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithGreaterMonthValue();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Год', пустое поле")
+        @DisplayName("Покупка тура с пустым полем 'Год'")
         public void shouldEmptyYearField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -200,23 +152,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Год', просроченный год")
-        public void shouldCardWithOverdueYear() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithOverdueYear();
-            purchasePage.invalidYearField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Год', год из отдаленного будущего")
-        public void shouldCardWithYearFromFuture() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithYearFromFuture();
-            purchasePage.invalidYearField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Владелец', пустое поле")
+        @DisplayName("Покупка тура с пустым полем 'Владелец'")
         public void shouldEmptyOwnerField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -224,7 +160,66 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с пробелом или дефисом")
+        @DisplayName("Покупка тура с пустым полем 'CVC/CVV'")
+        public void shouldEmptyCVCField() {
+            var purchasePage = new PurchasePage();
+            var info = getApprovedCard();
+            purchasePage.emptyCVCField(info);
+        }
+
+        //Покупка с невалидными значениями в полях
+        @Test
+        @DisplayName("Покупка тура по карте с невалидным номером")
+        public void shouldCardWithIncompleteCardNumber() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithIncompleteCardNumber();
+            purchasePage.invalidCardNumberField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тур по карте с 'просроченным' месяцем")
+        public void shouldCardWithOverdueMonth() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithOverdueMonth();
+            purchasePage.invalidMonthField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тура по карте с 'просроченным' годом")
+        public void shouldCardWithOverdueYear() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithOverdueYear();
+            purchasePage.invalidYearField(info);
+        }
+
+
+        @Test
+        @DisplayName("Покупка тур по карте с несуществующим месяцем")
+        public void shouldCardWithGreaterMonthValue() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithGreaterMonthValue();
+            purchasePage.invalidMonthField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тур по карте с годом значительно большим текущего")
+        public void shouldCardWithYearFromFuture() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithYearFromFuture();
+            purchasePage.invalidYearField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тура по карте с номером 'CVC', содержащим меньше трех цифр")
+        public void shouldCardWithIncompleteCVC() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithIncompleteCVC();
+            purchasePage.invalidCVCField(info);
+        }
+
+
+        @Test
+        @DisplayName("Покупка тура по карте с невалидными значениями в поле 'Владелец', пробелы")
         public void shouldCardWithSpaceOrHyphenOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithSpaceOrHyphenOwner();
@@ -232,7 +227,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с несколькими спец символами")
+        @DisplayName("Покупка тура по карте с невалидными значениями в поле 'Владелец', спецсимволы")
         public void shouldCardWithSpecialSymbolsOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithSpecialSymbolsOwner();
@@ -240,32 +235,17 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с цифрами")
+        @DisplayName("Покупка тура по карте с невалидными значениями в поле 'Владелец', цифры")
         public void shouldCardWithNumbersOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithNumbersOwner();
             purchasePage.invalidOwnerField(info);
         }
 
-        @Test
-        @DisplayName("Поле 'CVC/CVV', пустое поле")
-        public void shouldEmptyCVCField() {
-            var purchasePage = new PurchasePage();
-            var info = getApprovedCard();
-            purchasePage.emptyCVCField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'CVC/CVV', не полный номер")
-        public void shouldCardWithIncompleteCVC() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithIncompleteCVC();
-            purchasePage.invalidCVCField(info);
-        }
     }
 
     @Nested
-    //Тесты на валидацию полей кредитной формы:
+    //Покупка с пустыми полями в кредит:
     public class CreditFormFieldValidation {
 
         @BeforeEach
@@ -275,14 +255,14 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Отправка пустой формы")
+        @DisplayName("Покупка тура в кредит с пустыми полями")
         public void shouldEmpty() {
             var purchasePage = new PurchasePage();
             purchasePage.emptyForm();
         }
 
         @Test
-        @DisplayName("Поле 'Номер карты', пустое поле")
+        @DisplayName("Покупка тура в кредит с пустым полем 'Номер карты'")
         public void shouldEmptyCardNumberField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -290,15 +270,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Номер карты', не полный номер карты")
-        public void shouldCardWithIncompleteCardNumber() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithIncompleteCardNumber();
-            purchasePage.invalidCardNumberField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', пустое поле")
+        @DisplayName("Покупка тура в кредит с пустым полем 'Месяц'")
         public void shouldEmptyMonthField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -306,31 +278,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Месяц', просроченный месяц")
-        public void shouldCardWithOverdueMonth() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithOverdueMonth();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', нижнее негативное значение '00'")
-        public void shouldCardWithLowerMonthValue() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithLowerMonthValue();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Месяц', верхнее негативное значение '13'")
-        public void shouldCardWithGreaterMonthValue() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithGreaterMonthValue();
-            purchasePage.invalidMonthField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Год', пустое поле")
+        @DisplayName("Покупка тура в кредит с пустым полем 'Год'")
         public void shouldEmptyYearField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -338,23 +286,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Год', просроченный год")
-        public void shouldCardWithOverdueYear() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithOverdueYear();
-            purchasePage.invalidYearField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Год', год из отдаленного будущего")
-        public void shouldCardWithYearFromFuture() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithYearFromFuture();
-            purchasePage.invalidYearField(info);
-        }
-
-        @Test
-        @DisplayName("Поле 'Владелец', пустое поле")
+        @DisplayName("Покупка тура в кредит с пустым полем 'Владелец'")
         public void shouldEmptyOwnerField() {
             var purchasePage = new PurchasePage();
             var info = getApprovedCard();
@@ -362,7 +294,66 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с пробелом или дефисом")
+        @DisplayName("Покупка тура в кредит с пустым полем 'CVC/CVV'")
+        public void shouldEmptyCVCField() {
+            var purchasePage = new PurchasePage();
+            var info = getApprovedCard();
+            purchasePage.emptyCVCField(info);
+        }
+
+        //Покупка тура в кредит с невалидными значениями в полях
+
+        @Test
+        @DisplayName("Покупка тура в кредит по карте с невалидным номером")
+        public void shouldCardWithIncompleteCardNumber() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithIncompleteCardNumber();
+            purchasePage.invalidCardNumberField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тура в кредит по карте с 'просроченным' месяцем")
+        public void shouldCardWithOverdueMonth() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithOverdueMonth();
+            purchasePage.invalidMonthField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тура в кредит по карте с 'просроченным' годом")
+        public void shouldCardWithOverdueYear() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithOverdueYear();
+            purchasePage.invalidYearField(info);
+        }
+
+        @Test
+        @DisplayName("окупка тура в кредит по карте с несуществующим месяцем")
+        public void shouldCardWithGreaterMonthValue() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithGreaterMonthValue();
+            purchasePage.invalidMonthField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тур в кредит с годом значительно больше текущего")
+        public void shouldCardWithYearFromFuture() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithYearFromFuture();
+            purchasePage.invalidYearField(info);
+        }
+
+        @Test
+        @DisplayName("Покупка тура в кредит с номером 'CVC', содержащим меньше трех цифр")
+        public void shouldCardWithIncompleteCVC() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithIncompleteCVC();
+            purchasePage.invalidCVCField(info);
+        }
+
+
+        @Test
+        @DisplayName("Покупка тура в кредит с невалидными значениями в поле 'Владелец', пробелы")
         public void shouldCardWithSpaceOrHyphenOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithSpaceOrHyphenOwner();
@@ -370,7 +361,7 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с несколькими спец символами")
+        @DisplayName("Покупка тура в кредит с невалидными значениями в поле 'Владелец', спецсимволы")
         public void shouldCardWithSpecialSymbolsOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithSpecialSymbolsOwner();
@@ -378,27 +369,13 @@ public class DiplomBuyingTour {
         }
 
         @Test
-        @DisplayName("Поле 'Владелец', с цифрами")
+        @DisplayName("Покупка тура в кредит с невалидными значениями в поле 'Владелец', цифры")
         public void shouldCardWithNumbersOwner() {
             var purchasePage = new PurchasePage();
             var info = getCardWithNumbersOwner();
             purchasePage.invalidOwnerField(info);
         }
 
-        @Test
-        @DisplayName("Поле 'CVC/CVV', пустое поле")
-        public void shouldEmptyCVCField() {
-            var purchasePage = new PurchasePage();
-            var info = getApprovedCard();
-            purchasePage.emptyCVCField(info);
-        }
 
-        @Test
-        @DisplayName("Поле 'CVC/CVV', не полный номер")
-        public void shouldCardWithIncompleteCVC() {
-            var purchasePage = new PurchasePage();
-            var info = getCardWithIncompleteCVC();
-            purchasePage.invalidCVCField(info);
-        }
     }
 }
