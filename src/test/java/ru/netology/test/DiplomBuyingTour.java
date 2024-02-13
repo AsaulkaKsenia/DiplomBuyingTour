@@ -185,6 +185,14 @@ public class DiplomBuyingTour {
         }
 
         @Test
+        @DisplayName("Покупка тура по карте со значением в поле 'Месяц''00'")
+        public void shouldCardWithLowerMonthValue() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithLowerMonthValue();
+            purchasePage.invalidMonthField(info);
+        }
+
+        @Test
         @DisplayName("Покупка тура по карте с 'просроченным' годом")
         public void shouldCardWithOverdueYear() {
             var purchasePage = new PurchasePage();
@@ -316,6 +324,13 @@ public class DiplomBuyingTour {
         public void shouldCardWithOverdueMonth() {
             var purchasePage = new PurchasePage();
             var info = getCardWithOverdueMonth();
+            purchasePage.invalidMonthField(info);
+        }
+        @Test
+        @DisplayName("Покупка тура в кредит со значением в поле 'Месяц''00'")
+        public void shouldCardWithLowerMonthValue() {
+            var purchasePage = new PurchasePage();
+            var info = getCardWithLowerMonthValue();
             purchasePage.invalidMonthField(info);
         }
 
