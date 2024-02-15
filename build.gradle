@@ -39,6 +39,8 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'selenide.headless', System.getProperty('headless')
-    systemProperty 'datasource', System.getProperty('datasource', 'jdbc:mysql://185.119.57.164:3306/base_mysql')
+    systemProperty 'datasource', System.getProperty('datasource', 'jdbc:mysql://192.168.99.100:3306/base_mysql')
+    //убрать для работы postgreSQL, строку выше закоментировать:
+    //systemProperty 'datasource', System.getProperty('datasource', 'jdbc:postgresql://192.168.99.100:5432/base_postgresql')
 
 }

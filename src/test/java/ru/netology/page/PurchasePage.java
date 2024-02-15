@@ -9,13 +9,13 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
 
 public class PurchasePage {
-    //Кнопка "Купить" и заголовок "Оплата по карте":
+
     private final SelenideElement buyButton = $(byText("Купить"));
     private final SelenideElement buyHeading = $(byText("Оплата по карте"));
-    //Кнопка "Купить в кредит" и заголовок "Кредит по данным карты":
+
     private final SelenideElement creditButton = $(byText("Купить в кредит"));
     private final SelenideElement creditHeading = $(byText("Кредит по данным карты"));
-    //Форма для ввода данных, со всеми полями ввода, ошибками полей и кнопкой "Продолжить":
+
     private final SelenideElement cardNumberField = $("input[placeholder='0000 0000 0000 0000']");
     private final SelenideElement cardNumberFieldError = $x("//*[text()='Номер карты']/..//*[@class='input__sub']");
     private final SelenideElement monthField = $("input[placeholder='08']");
