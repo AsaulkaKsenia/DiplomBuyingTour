@@ -11,7 +11,7 @@
 
 ![img.png](img.png)
 
-В результате прогона тестов были составлены 16 [issue](https://github.com/AsaulkaKsenia/DiplomBuyingTour/issues). 
+В результате прогона тестов были составлены 8 [issue](https://github.com/AsaulkaKsenia/DiplomBuyingTour/issues). 
 
 ## Общие рекомендации
 
